@@ -1,0 +1,126 @@
+name: debristracker
+description: SINGSING is an event booking app.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 0.11.23
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
+  image_picker: ^0.8.2              # Setup Image picker package
+  firebase_core: ^1.10.0             # Setup firebase_core package
+  code_field: ^1.22.0               # OTP Pin Form
+  firebase_auth: ^3.2.0             # Setup firebase_auth package
+  firebase_analytics: ^8.3.4        # Setup firebase analytics package
+  cloud_firestore: ^2.4.0           # Setup Firestore package
+  clipboard: ^0.1.3                 # Setup Clipboard
+  contacts_service: ^0.6.1          # Setup Contact Access package
+  permission_handler: ^8.1.4+2      # Setup Permission handler package
+  datetime_picker_formfield: ^2.0.0 # Setup date time picker
+  flutter_datetime_picker: ^1.5.1   # Setup date time picker
+  intl: ">=0.17.0 <1.0.0"           # Setup date time picker
+  firebase_storage: ^10.0.1         # Setup firebase storeage package
+  uuid: ^3.0.4                      # Unique ID Generator
+  draggable_scrollbar: ^0.1.0       # Scrollbar
+  sliding_up_panel: ^2.0.0+1        # Chat slide up
+  flutter_spinkit: ^4.1.2           # Loading Screen Animator
+  shimmer: ^2.0.0                   # Shimmer Loader
+  cached_network_image: ^3.1.0      # Cache network images
+  timer_count_down: ^2.2.0          # Count Down Timer
+  sms_autofill: ^2.0.1              # Add SMS autofill
+  flutter_sms: ^2.3.1               # SendSMS plugin
+  vertical_tabs: ^0.2.0             # Vertical Tab
+  firebase_dynamic_links: ^2.0.9    # Dynamic Link
+  flutter_dotenv: ^5.0.2
+  another_flushbar: ^1.10.25        # Top-Popupbar
+  share_plus: ^3.0.1                # Social Media Share
+  google_place: ^0.4.3              # Location Search
+  simple_gradient_text: ^1.2.2      # For gradient text
+
+  flutter_localizations:
+    sdk: flutter
+    version: ^0.0.0
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+  assets:
+    - images/shimmer-bug-image.png
+    - images/marine-debris.png
+    - images/stop-plastic.png
+    - images/right-wrong.png
+    - images/success.png
+    - images/bag.png
+    - images/plastic-glass.png
+    - images/logo.png
+
+    - asset/country-code.json
+
+
+
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  #fonts:
+  #  - family: Montserrat
+  #    fonts:
+  #      - asset: fonts/Montserrat-Regular.ttf
+  #      - asset: fonts/Montserrat-Bold.ttf
+  #      - asset: fonts/Montserrat-Light.ttf
+  #      - asset: fonts/Montserrat-Italic.ttf
+  #        style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages

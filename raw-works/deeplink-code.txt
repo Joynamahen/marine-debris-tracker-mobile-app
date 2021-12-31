@@ -1,0 +1,63 @@
+
+---------------------
+**Module Name**
+---------------------
+  https://pub.dev/packages/uni_links
+  uni_links: ^0.5.1
+
+
+
+
+
+
+---------------------
+**ANDROID MANIFEST**
+---------------------
+
+<intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST -->
+        <data android:scheme="https" android:host="joinsingsing.page.link" />
+</intent-filter>
+
+
+
+---------------------
+**IOS**
+---------------------
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- ... other keys -->
+  <key>com.apple.developer.associated-domains</key>
+  <array>
+    <string>applinks:[YOUR_HOST]</string>
+  </array>
+  <!-- ... other keys -->
+</dict>
+</plist>
+
+
+
+
+
+----------
+**METHOD**
+----------
+
+
+Future<void> initUniLinks() async {
+
+  try {
+
+    final initialLink = await getInitialLink();
+    print(initialLink);
+
+  } on PlatformException {
+
+  }
+}
