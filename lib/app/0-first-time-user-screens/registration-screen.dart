@@ -72,6 +72,7 @@ class _RegistrationPage extends State<RegistrationPage> {
             profilePictureRefPath == "" ? '[SKIPPED]' : profilePictureRefPath,
         'profile_picture_url':
             profilePictureURL == "" ? '[SKIPPED]' : profilePictureURL,
+        'is_notification_available': "[FALSE]"
       }, SetOptions(merge: true)).then((value) {
         setState(() {
           isLoading = false;

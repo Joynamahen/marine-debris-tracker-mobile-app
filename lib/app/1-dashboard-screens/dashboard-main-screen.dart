@@ -1,30 +1,47 @@
-import 'dart:async';
+/*
+
+ * Date:            07/27/2021
+ * Organization:    DreamSpace Academy
+ * Website:         https://dreamspace.academy/
+ * Author:          Gunarakulan Gunaratnam
+ * Author Email:    gunarakulan@gmail.com
+ * Contributors :   Abitharani Jeyachandran
+
+
+  File Info
+  ---------
+  This is the main dashboard of the app. It contains the social post which are posted by other members.
+
+ */
+
 import 'dart:math';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:debristracker/app/1-dashboard-screens/account-setting.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:debristracker/app-utils/firebase-firestore-utils.dart';
 import 'package:debristracker/app-utils/user-account-utils.dart';
 import 'package:debristracker/app/1-dashboard-screens/account-setting.dart';
 import 'package:debristracker/app/1-dashboard-screens/notification-screen.dart';
-import 'package:debristracker/app/1-dashboard-screens/participant-list-screen.dart';
 import 'package:debristracker/app/2-create-events-screens/event-creatation-main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
 import 'add-extra-participants-screen.dart';
 import 'event-setting.dart';
 
-final Color fontColor = Color(0xff274D6C); // Define a color button gradient
-final Color primaryColor = Color(0xff274D6C); // Define a color button gradient
+final Color buttonColor =
+    Color(0xff04D3A8); // Define a color for button gradient
+final Color primaryColor =
+    Color(0xff04D3A8); // Define a color for button gradient
 final Color secondaryColor =
-    Color(0xff00bfff); // Define a color button gradient
+    Color(0xff00B7B2); // Define a color for button gradient
 final FirebaseAuth _auth =
     FirebaseAuth.instance; // Create Firebase Auth instance
 
@@ -46,11 +63,9 @@ int selectedMainIndex = 0;
 int selectedSubIndex = 0;
 int selectedSuperSubIndex = 0;
 
-var acceptedPeopleUIDList = [];
+bool detectFirstTime = false;
 
-ScrollController chatScroller = ScrollController(
-  initialScrollOffset: 0.0,
-);
+var acceptedPeopleUIDList = [];
 
 class DashboardPage extends StatefulWidget {
   var documentID;
@@ -75,13 +90,19 @@ class _DashboardPageState extends State<DashboardPage> {
     getUserName();
 
     if (widget.documentID == null) {
-      detectTheFirstUpComingEvent();
+      detectFirstTime = false;
+
       if (widget.statusType == "[EVENT_DECLINED]") {
         WidgetsBinding.instance!
             .addPostFrameCallback((_) => eventDeclinedTopBar());
       }
+    } else if (widget.documentID == "[FIRST_TIME]") {
+      detectFirstTime = true;
     } else {
       // After Insertion or Deeplink
+
+      detectFirstTime = false;
+
       if (widget.statusType == "[EVENT_ACCEPTED]") {
         WidgetsBinding.instance!
             .addPostFrameCallback((_) => eventAcceptedTopBar());
@@ -188,142 +209,147 @@ class _DashboardPageState extends State<DashboardPage> {
               }
             });
 
+            int viewLength = 0;
+
+            if (availableYears.length > 0) {
+              viewLength = availableYears.length;
+            } else if (availableYears.length == 0 &&
+                noDateEventData.length > 0) {
+              viewLength = 1;
+            }
+
             return ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: availableYears.length,
+                itemCount: viewLength,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.0125,
                       ),
-                      Text(
-                        availableYears[index],
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff3B455C),
+                      if (availableYears.length > 0) ...[
+                        GradientText(
+                          availableYears[index],
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                          colors: [
+                            Color(0xff3B455C),
+                            Color(0xff00B7B2),
+                          ],
                         ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.0125,
-                      ),
-                      for (var xm = 0;
-                          xm < availableYearsMonths.length;
-                          xm++) ...[
-                        if (availableYearsMonths[xm]
-                                .toString()
-                                .split("|")[0]
-                                .trim() ==
-                            availableYears[index]) ...[
-                          Text(
-                            availableYearsMonths[xm]
-                                .toString()
-                                .split("|")[1]
-                                .trim()
-                                .substring(0, 3),
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xff274D6C)),
-                          ),
-                          for (var ed = 0;
-                              ed < snapshot.data!.docs.length;
-                              ed++) ...[
-                            if (snapshot.data!.docs[ed]["start_date"] !=
-                                "[SKIPPED]") ...[
-                              if (snapshot.data!.docs[ed]["start_date"]
-                                          .toString()
-                                          .split(" ")[3]
-                                          .trim() ==
-                                      availableYears[index] &&
-                                  snapshot.data!.docs[ed]["start_date"]
-                                          .toString()
-                                          .split(" ")[1]
-                                          .trim() ==
-                                      availableYearsMonths[xm]
-                                          .toString()
-                                          .split("|")[1]
-                                          .trim())
-                                GestureDetector(
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        top: MediaQuery.of(context).size.width *
-                                            0.0125),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        AnimatedContainer(
-                                          duration: Duration(milliseconds: 200),
-                                          height: (selectedMainIndex == index &&
-                                                  selectedSubIndex == xm &&
-                                                  selectedSuperSubIndex == ed)
-                                              ? MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.1
-                                              : 0,
-                                          width: 3,
-                                          color: Color(0xffFF6348),
-                                        ),
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.0125,
+                        ),
+                        for (var xm = 0;
+                            xm < availableYearsMonths.length;
+                            xm++) ...[
+                          if (availableYearsMonths[xm]
+                                  .toString()
+                                  .split("|")[0]
+                                  .trim() ==
+                              availableYears[index]) ...[
+                            Text(
+                              availableYearsMonths[xm]
+                                  .toString()
+                                  .split("|")[1]
+                                  .trim()
+                                  .substring(0, 3),
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xff04D3A8)),
+                            ),
+                            for (var ed = 0;
+                                ed < snapshot.data!.docs.length;
+                                ed++) ...[
+                              if (snapshot.data!.docs[ed]["start_date"] !=
+                                  "[SKIPPED]") ...[
+                                if (snapshot.data!.docs[ed]["start_date"]
+                                            .toString()
+                                            .split(" ")[3]
+                                            .trim() ==
+                                        availableYears[index] &&
+                                    snapshot.data!.docs[ed]["start_date"]
+                                            .toString()
+                                            .split(" ")[1]
+                                            .trim() ==
+                                        availableYearsMonths[xm]
+                                            .toString()
+                                            .split("|")[1]
+                                            .trim())
+                                  GestureDetector(
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                          top: MediaQuery.of(context)
                                                   .size
                                                   .width *
-                                              0.015,
-                                        ),
-                                        Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.1,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.1,
-                                          alignment: Alignment.center,
-                                          child: InkWell(
-                                              onTap: () async {
-                                                setState(() {
-                                                  selectedMainIndex = index;
-                                                  selectedSubIndex = xm;
-                                                  selectedSuperSubIndex = ed;
+                                              0.0125),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          AnimatedContainer(
+                                            duration:
+                                                Duration(milliseconds: 200),
+                                            height: (selectedMainIndex ==
+                                                        index &&
+                                                    selectedSubIndex == xm &&
+                                                    selectedSuperSubIndex == ed)
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.1
+                                                : 0,
+                                            width: 3,
+                                            color: Color(0xffFF6348),
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.015,
+                                          ),
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.1,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.1,
+                                            alignment: Alignment.center,
+                                            child: InkWell(
+                                                onTap: () async {
+                                                  setState(() {
+                                                    selectedMainIndex = index;
+                                                    selectedSubIndex = xm;
+                                                    selectedSuperSubIndex = ed;
 
-                                                  globalEventDataDocumentID =
-                                                      snapshot
-                                                          .data!.docs[ed].id;
-                                                });
-                                              },
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(15),
-                                                  topRight: Radius.circular(15),
-                                                  bottomLeft:
-                                                      Radius.circular(15),
-                                                  bottomRight:
-                                                      Radius.circular(15),
-                                                ),
-                                                child: snapshot.data!.docs[ed][
-                                                            'banner_image_url'] ==
-                                                        "[SKIPPED]"
-                                                    ? Container(
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.1,
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.1,
-                                                        color: Colors.white,
-                                                        child: Image.asset(
-                                                          "images/default-event-banner-image.png",
-                                                          fit: BoxFit.cover,
+                                                    globalEventDataDocumentID =
+                                                        snapshot
+                                                            .data!.docs[ed].id;
+                                                  });
+                                                },
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(15),
+                                                    topRight:
+                                                        Radius.circular(5),
+                                                    bottomLeft:
+                                                        Radius.circular(15),
+                                                    bottomRight:
+                                                        Radius.circular(15),
+                                                  ),
+                                                  child: snapshot.data!.docs[ed]
+                                                              [
+                                                              'banner_image_url'] ==
+                                                          "[SKIPPED]"
+                                                      ? Container(
                                                           width: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -334,69 +360,85 @@ class _DashboardPageState extends State<DashboardPage> {
                                                                   .size
                                                                   .width *
                                                               0.1,
+                                                          color: Colors.white,
+                                                          child: Image.asset(
+                                                            "images/default-event-banner-image.png",
+                                                            fit: BoxFit.cover,
+                                                            width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.1,
+                                                            height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.1,
+                                                          ),
+                                                        )
+                                                      : CachedNetworkImage(
+                                                          imageUrl: snapshot
+                                                                  .data!
+                                                                  .docs[ed][
+                                                              "banner_image_url"],
+                                                          fit: BoxFit.cover,
+                                                          placeholder: (context, url) => Shimmer
+                                                              .fromColors(
+                                                                  child:
+                                                                      Container(
+                                                                    width: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.1,
+                                                                    height: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.1,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                  baseColor: Colors
+                                                                      .grey
+                                                                      .shade300,
+                                                                  highlightColor:
+                                                                      Colors
+                                                                          .grey
+                                                                          .shade100),
+                                                          errorWidget: (context,
+                                                                  url, error) =>
+                                                              Icon(Icons.error),
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.1,
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.1, // this is the solution for border
                                                         ),
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        imageUrl: snapshot
-                                                                .data!.docs[ed][
-                                                            "banner_image_url"],
-                                                        fit: BoxFit.cover,
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            Shimmer.fromColors(
-                                                                child:
-                                                                    Container(
-                                                                  width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.1,
-                                                                  height: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width *
-                                                                      0.1,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                                baseColor: Colors
-                                                                    .grey
-                                                                    .shade300,
-                                                                highlightColor:
-                                                                    Colors.grey
-                                                                        .shade100),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Icon(Icons.error),
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.1,
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.1, // this is the solution for border
-                                                      ),
-                                              )),
-                                        ),
-                                      ],
+                                                )),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                )
+                                  )
+                              ]
                             ]
                           ]
                         ]
                       ],
-                      if (isNoDateAvailable == true &&
-                          index == availableYears.length - 1) ...[
+                      if ((isNoDateAvailable == true &&
+                              index == availableYears.length - 1) ||
+                          (isNoDateAvailable == true &&
+                              availableYears.length == 0)) ...[
                         Text(
                           "No Date",
                           style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xff274D6C)),
+                              color: Color(0xff04D3A8)),
                         ),
                         for (var en = 0; en < noDateEventData.length; en++) ...[
                           GestureDetector(
@@ -442,7 +484,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(15),
-                                            topRight: Radius.circular(15),
+                                            topRight: Radius.circular(5),
                                             bottomLeft: Radius.circular(15),
                                             bottomRight: Radius.circular(15),
                                           ),
@@ -547,7 +589,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      Color(0xff274D6C),
+                      Color(0xff04D3A8),
                       Color(0xff00B7B2),
                     ])),
             constraints: BoxConstraints(
@@ -560,245 +602,6 @@ class _DashboardPageState extends State<DashboardPage> {
         }
       },
     );
-  }
-
-  decideScreenFutureBuilderView() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('event_data')
-          .where('participants', arrayContainsAny: [
-            "$globalCurrentUserDocumentID = [GOING]",
-            "$globalCurrentUserDocumentID = [PENDING]"
-          ])
-          .where("event_status", isEqualTo: "[ACTIVE]")
-          .orderBy("start_date_time", descending: true)
-          .snapshots(),
-      builder: (BuildContext context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data!.docs.length == 0) {
-            return returnFirstTimeDashboard();
-          } else if (snapshot.data!.docs.length > 0) {
-            return returnDashboard();
-          } else {
-            return Scaffold(
-              body: Center(
-                child: SpinKitFadingCircle(
-                  color: Colors.black,
-                ),
-              ),
-            );
-          }
-        } else {
-          return Scaffold(
-            body: Center(
-              child: SpinKitFadingCircle(
-                color: Colors.black,
-              ),
-            ),
-          );
-        }
-      },
-    );
-  }
-
-  notificationCheckerStreamer() {
-    return StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(globalCurrentUserDocumentID)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data!['is_notification_available'] == "[TRUE]") {
-              return Positioned(
-                right: 5,
-                top: 5,
-                child: new Container(
-                  decoration: new BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Color(0xffD8AC3A).withOpacity(0.8),
-                            Color(0xffD8833A),
-                          ])),
-                  constraints: BoxConstraints(
-                    minWidth: 12,
-                    minHeight: 12,
-                  ),
-                ),
-              );
-            } else {
-              return Text("");
-            }
-          } else {
-            return Text("");
-          }
-        });
-  }
-
-  getEventDataIndicatorIndex() async {
-    int mainIndex = 0;
-    int subIndex = 0;
-    int superSubIndex = 0;
-
-    bool isNoDateAvailable = true;
-
-    var allDataEventIDs = [];
-    var availableYears = [];
-    var availableYearsMonths = [];
-
-    QuerySnapshot<Map<String, dynamic>> allData =
-        await FirebaseFirestore.instance
-            .collection('event_data')
-            .where('participants', arrayContainsAny: [
-              "$globalCurrentUserDocumentID = [GOING]",
-              "$globalCurrentUserDocumentID = [PENDING]"
-            ])
-            .where("event_status", isEqualTo: "[ACTIVE]")
-            .orderBy("start_date_time", descending: true)
-            .get();
-
-    allData.docs.forEach((event) {
-      allDataEventIDs.add(event);
-
-      if (event["start_date"] != "[SKIPPED]") {
-        if (isNoDateAvailable == true) {
-          isNoDateAvailable = false;
-        }
-
-        String year = event["start_date"].toString().split(" ")[3].trim();
-        String monthName = event["start_date"].toString().split(" ")[1].trim();
-
-        if (!availableYears.contains(year)) {
-          availableYears.add(year);
-        }
-
-        if (!availableYearsMonths.contains(year + "|" + monthName)) {
-          availableYearsMonths.add(year + "|" + monthName);
-        }
-      }
-    });
-
-    bool isIDFound = false;
-
-    if (isNoDateAvailable == false) {
-      for (var x = 0; x < availableYears.length; x++) {
-        mainIndex++;
-
-        for (var y = 0; y < availableYearsMonths.length; y++) {
-          if (availableYearsMonths[y].toString().split("|")[0].trim() ==
-              availableYears[x]) {
-            subIndex++;
-
-            for (var z = 0; z < allDataEventIDs.length; z++) {
-              if (allDataEventIDs[z]["start_date"] != "[SKIPPED]") {
-                if (allDataEventIDs[z]["start_date"]
-                            .toString()
-                            .split(" ")[3]
-                            .trim() ==
-                        availableYears[x] &&
-                    allDataEventIDs[z]["start_date"]
-                            .toString()
-                            .split(" ")[1]
-                            .trim() ==
-                        availableYearsMonths[y]
-                            .toString()
-                            .split("|")[1]
-                            .trim()) {
-                  superSubIndex++;
-
-                  if (globalEventDataDocumentID == allDataEventIDs[z].id) {
-                    selectedMainIndex = mainIndex - 1;
-                    selectedSubIndex = subIndex - 1;
-                    selectedSuperSubIndex = superSubIndex - 1;
-
-                    isIDFound = true;
-                  }
-                }
-              }
-
-              if (isIDFound == true) {
-                break;
-              }
-            }
-
-            if (isIDFound == true) {
-              break;
-            }
-          }
-
-          if (isIDFound == true) {
-            break;
-          }
-        }
-      }
-    } else {
-      selectedMainIndex = 0;
-      selectedSubIndex = 0;
-      selectedSuperSubIndex = 0;
-    }
-  }
-
-  getEventDataIndicatorIndex4() async {
-    var eventIDsData = {};
-    var availableMonths = [];
-
-    int mainIndex = 0;
-    int subIndex = 0;
-
-    // Get all events
-    await FirebaseFirestore.instance
-        .collection('event_data')
-        .where('participants', arrayContainsAny: [
-          "$globalCurrentUserDocumentID = [GOING]",
-          "$globalCurrentUserDocumentID = [PENDING]"
-        ])
-        .where("event_status", isEqualTo: "[ACTIVE]")
-        .orderBy("start_date_time", descending: true)
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-          querySnapshot.docs.forEach((element) {
-            if (element["start_date"] != "[SKIPPED]") {
-              String monthName =
-                  element["start_date"].toString().split(" ")[1].trim();
-
-              if (eventIDsData.containsKey(monthName)) {
-                eventIDsData[monthName].add(element);
-              } else {
-                eventIDsData[monthName] = [element];
-                availableMonths.add(monthName);
-              }
-            } else {
-              if (eventIDsData.containsKey("No_Date")) {
-                eventIDsData["No_Date"].add(element);
-              } else {
-                eventIDsData["No_Date"] = [element];
-
-                availableMonths.add("No_Date");
-              }
-            }
-          });
-        });
-
-    for (var x = 0; x < availableMonths.length; x++) {
-      mainIndex++;
-
-      for (var y = 0; y < eventIDsData[availableMonths[x]].length; y++) {
-        subIndex++;
-
-        if (globalEventDataDocumentID ==
-            eventIDsData[availableMonths[x]][y].id) {
-          selectedMainIndex = mainIndex - 1;
-          selectedSubIndex = subIndex - 1;
-        }
-      }
-
-      subIndex = 0;
-    }
-
-    mainIndex = 0;
   }
 
   detectTheFirstUpComingEvent() async {
@@ -986,6 +789,212 @@ class _DashboardPageState extends State<DashboardPage> {
             await getEventDataIndicatorIndex();
           }
         });
+
+    return "[TRUE]";
+  }
+
+  returnDashboardFutureBuilderView() {
+    return FutureBuilder(
+      future: detectTheFirstUpComingEvent(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.hasData && snapshot.data.toString() == "[TRUE]") {
+          detectFirstTime = false;
+
+          return returnDashboard();
+        } else {
+          return Scaffold(
+            body: Center(
+              child: SpinKitFadingCircle(
+                color: Colors.black,
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  decideScreenFutureBuilderView() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('event_data')
+          .where('participants', arrayContainsAny: [
+            "$globalCurrentUserDocumentID = [GOING]",
+            "$globalCurrentUserDocumentID = [PENDING]"
+          ])
+          .where("event_status", isEqualTo: "[ACTIVE]")
+          .orderBy("start_date_time", descending: true)
+          .snapshots(),
+      builder: (BuildContext context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data!.docs.length == 0) {
+            return returnDashboard();
+          } else if (snapshot.data!.docs.length > 0) {
+            if (detectFirstTime == true) {
+              return returnDashboardFutureBuilderView();
+            } else {
+              return returnDashboard();
+            }
+          } else {
+            return Scaffold(
+              body: Center(
+                child: SpinKitFadingCircle(
+                  color: Colors.black,
+                ),
+              ),
+            );
+          }
+        } else {
+          return Scaffold(
+            body: Center(
+              child: SpinKitFadingCircle(
+                color: Colors.black,
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  notificationCheckerStreamer() {
+    return StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(globalCurrentUserDocumentID)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data!['is_notification_available'] == "[TRUE]") {
+              return Positioned(
+                right: 5,
+                top: 5,
+                child: new Container(
+                  decoration: new BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Color(0xffD8AC3A).withOpacity(0.8),
+                            Color(0xffD8833A),
+                          ])),
+                  constraints: BoxConstraints(
+                    minWidth: 12,
+                    minHeight: 12,
+                  ),
+                ),
+              );
+            } else {
+              return Text("");
+            }
+          } else {
+            return Text("");
+          }
+        });
+  }
+
+  getEventDataIndicatorIndex() async {
+    int mainIndex = 0;
+    int subIndex = 0;
+    int superSubIndex = 0;
+
+    bool isNoDateAvailable = true;
+
+    var allDataEventIDs = [];
+    var availableYears = [];
+    var availableYearsMonths = [];
+
+    QuerySnapshot<Map<String, dynamic>> allData =
+        await FirebaseFirestore.instance
+            .collection('event_data')
+            .where('participants', arrayContainsAny: [
+              "$globalCurrentUserDocumentID = [GOING]",
+              "$globalCurrentUserDocumentID = [PENDING]"
+            ])
+            .where("event_status", isEqualTo: "[ACTIVE]")
+            .orderBy("start_date_time", descending: true)
+            .get();
+
+    allData.docs.forEach((event) {
+      allDataEventIDs.add(event);
+
+      if (event["start_date"] != "[SKIPPED]") {
+        if (isNoDateAvailable == true) {
+          isNoDateAvailable = false;
+        }
+
+        String year = event["start_date"].toString().split(" ")[3].trim();
+        String monthName = event["start_date"].toString().split(" ")[1].trim();
+
+        if (!availableYears.contains(year)) {
+          availableYears.add(year);
+        }
+
+        if (!availableYearsMonths.contains(year + "|" + monthName)) {
+          availableYearsMonths.add(year + "|" + monthName);
+        }
+      }
+    });
+
+    bool isIDFound = false;
+
+    if (isNoDateAvailable == false) {
+      for (var x = 0; x < availableYears.length; x++) {
+        mainIndex++;
+
+        for (var y = 0; y < availableYearsMonths.length; y++) {
+          if (availableYearsMonths[y].toString().split("|")[0].trim() ==
+              availableYears[x]) {
+            subIndex++;
+
+            for (var z = 0; z < allDataEventIDs.length; z++) {
+              if (allDataEventIDs[z]["start_date"] != "[SKIPPED]") {
+                if (allDataEventIDs[z]["start_date"]
+                            .toString()
+                            .split(" ")[3]
+                            .trim() ==
+                        availableYears[x] &&
+                    allDataEventIDs[z]["start_date"]
+                            .toString()
+                            .split(" ")[1]
+                            .trim() ==
+                        availableYearsMonths[y]
+                            .toString()
+                            .split("|")[1]
+                            .trim()) {
+                  superSubIndex++;
+
+                  if (globalEventDataDocumentID == allDataEventIDs[z].id) {
+                    selectedMainIndex = mainIndex - 1;
+                    selectedSubIndex = subIndex - 1;
+                    selectedSuperSubIndex = superSubIndex - 1;
+
+                    isIDFound = true;
+                  }
+                }
+              }
+
+              if (isIDFound == true) {
+                break;
+              }
+            }
+
+            if (isIDFound == true) {
+              break;
+            }
+          }
+
+          if (isIDFound == true) {
+            break;
+          }
+        }
+      }
+    } else {
+      selectedMainIndex = 0;
+      selectedSubIndex = 0;
+      selectedSuperSubIndex = 0;
+    }
   }
 
   uploadChatDataToDatabase() async {
@@ -1056,13 +1065,13 @@ class _DashboardPageState extends State<DashboardPage> {
                     ClipRRect(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15),
+                        topRight: Radius.circular(5),
                         bottomLeft: Radius.circular(15),
                         bottomRight: Radius.circular(15),
                       ),
                       child: snapshot.data[1] == "[SKIPPED]"
                           ? Image.asset(
-                              "images/default-event-banner-image.png",
+                              "images/default-profile-picture.png",
                               fit: BoxFit.cover,
                               width: MediaQuery.of(context).size.width * 0.1,
                               height: MediaQuery.of(context).size.width *
@@ -1224,6 +1233,8 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  ScrollController _scrollController = ScrollController();
+
   streamChatData() {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -1235,35 +1246,8 @@ class _DashboardPageState extends State<DashboardPage> {
           if (snapshot.data != null && snapshot.hasData) {
             return Column(
               children: [
-                /*
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-
-                    Text(
-                      "SINGSING",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xffffffff),
-                      ),
-                    ),
-                    Text(
-                      currentDate + " at " + currentTime,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xffffffff).withOpacity(0.5),
-                      ),
-                    ),
-                  ],
-                ),
-                */
                 Text(
-                  "WELCOME you funny crowd. Amazing to have you here. We promise, we wont spam you. We just want your best 😇 \nHow about you test some of our amazing features? Time for a little poll? Do you already know where to go? Check it out!",
+                  "WELCOME. This is the start of your event chat.",
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontSize: 12,
@@ -1274,7 +1258,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 Container(
                   child: ListView.builder(
                       shrinkWrap: true,
-                      controller: chatScroller,
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
@@ -1320,7 +1303,12 @@ class _DashboardPageState extends State<DashboardPage> {
                   MaterialPageRoute(builder: (_) => AccountSettingScreen()));
             },
             child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(5),
+                bottomLeft: Radius.circular(15),
+                bottomRight: Radius.circular(15),
+              ),
               child: snapshot.data.toString() != '[SKIPPED]'
                   ? CachedNetworkImage(
                       imageUrl: snapshot.data.toString(),
@@ -1338,7 +1326,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       height: 40, // this is the solution for border
                     )
                   : Image.asset(
-                      "images/default-event-banner-image.png",
+                      "images/default-profile-picture.png",
                       fit: BoxFit.cover,
                       width: 40,
                       height: 40, // this is the solution for border
@@ -1347,8 +1335,11 @@ class _DashboardPageState extends State<DashboardPage> {
           );
         } else {
           return ClipRRect(
-              borderRadius: BorderRadius.all(
-                Radius.circular(30),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(5),
+                bottomLeft: Radius.circular(15),
+                bottomRight: Radius.circular(15),
               ),
               child: Shimmer.fromColors(
                   child: Container(
@@ -1863,7 +1854,11 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Container(
               width: MediaQuery.of(context).size.width -
                   MediaQuery.of(context).size.width * 0.15,
-              color: Colors.white,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xffF3F0E6), Color(0xffFFFFFF)])),
               constraints: BoxConstraints(
                   maxWidth: 600,
                   minHeight: MediaQuery.of(context).size.height,
@@ -1901,13 +1896,12 @@ class _DashboardPageState extends State<DashboardPage> {
                     width: MediaQuery.of(context).size.width * 0.8,
                     height: MediaQuery.of(context).size.height * 0.25,
                     child: snapshot.data['banner_image_url'] == '[SKIPPED]'
-                        ? Container(
-                            alignment: Alignment.bottomCenter,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(30),
-                              ),
-                              color: Colors.white,
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                              bottomLeft: Radius.circular(20),
+                              bottomRight: Radius.circular(20),
                             ),
                             child: Image.asset(
                               "images/default-event-banner-image.png",
@@ -1915,11 +1909,13 @@ class _DashboardPageState extends State<DashboardPage> {
                               height:
                                   MediaQuery.of(context).size.height * 0.225,
                               fit: BoxFit.cover,
-                            ),
-                          )
+                            ))
                         : ClipRRect(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(30),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                              bottomLeft: Radius.circular(20),
+                              bottomRight: Radius.circular(20),
                             ),
                             child: CachedNetworkImage(
                               imageUrl: snapshot.data['banner_image_url'],
@@ -1950,7 +1946,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xff274D6C)),
+                          color: Color(0xff04D3A8)),
                     ),
                   if (snapshot.data['event_intro'] != '[SKIPPED]')
                     Text(
@@ -1971,7 +1967,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xff274D6C)),
+                          color: Color(0xff04D3A8)),
                     ),
                   if (snapshot.data['location'] != "[SKIPPED]")
                     Text(
@@ -1986,23 +1982,47 @@ class _DashboardPageState extends State<DashboardPage> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.0125,
                     ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ParticipantListPage(
-                              eventDocumentID: globalEventDataDocumentID)));
-                    },
-                    child: Text(
-                      "participants",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xff274D6C)),
-                    ),
-                  ),
                   getInvitedParticipantsProfileFutureBuilderView(
                       snapshot.data['participants']),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.0125,
+                  ),
+                  if (isRequestAccepted == true && isHostAccess == true)
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      height: MediaQuery.of(context).size.height * 0.04,
+                      alignment: Alignment.center,
+                      child: TextButton(
+                        // If the done button is clicked, do the following things.
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => AddExtraParticipantsPage(
+                                  eventDocumentID: globalEventDataDocumentID,
+                                  eventName: snapshot.data['event_name'])));
+                        },
+                        child: Text(
+                          'Invite friends',
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(34)),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.25),
+                              spreadRadius: 0,
+                              blurRadius: 2,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                          gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                secondaryColor,
+                                primaryColor
+                              ])), // Apply gradient to the button
+                    ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.0125,
                   ),
@@ -2038,7 +2058,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                             Radius.circular(34)),
                                         boxShadow: <BoxShadow>[
                                           BoxShadow(
-                                            color: Color(0xff274D6C),
+                                            color: Color(0xff04D3A8),
                                             spreadRadius: 0,
                                             blurRadius: 2,
                                             offset: Offset(0, 4),
@@ -2239,7 +2259,11 @@ class _DashboardPageState extends State<DashboardPage> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width -
                 MediaQuery.of(context).size.width * 0.15,
-            color: Colors.white,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xffF3F0E6), Color(0xffFFFFFF)])),
             constraints: BoxConstraints(maxWidth: 600),
             padding:
                 EdgeInsets.all(MediaQuery.of(context).size.height * 0.0125),
@@ -2258,9 +2282,7 @@ class _DashboardPageState extends State<DashboardPage> {
         .doc(globalEventDataDocumentID)
         .get(); // Get eventData based on current globalEventDataDocumentID.
 
-    if (documentSnapshot['guest_as_host'] == "[TRUE]") {
-      isHostAccess = true;
-    } else if (documentSnapshot['host'].contains(globalCurrentUserDocumentID)) {
+    if (documentSnapshot['host'].contains(globalCurrentUserDocumentID)) {
       // If documentSnapshot['host'] contains current ID
 
       isHostAccess = true;
@@ -2374,15 +2396,13 @@ class _DashboardPageState extends State<DashboardPage> {
                       padding: EdgeInsets.only(
                           right: MediaQuery.of(context).size.width * 0.0125),
                       child: InkWell(
-                          onTap: () async {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ParticipantListPage(
-                                    eventDocumentID:
-                                        globalEventDataDocumentID)));
-                          },
+                          onTap: () async {},
                           child: ClipRRect(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(30),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              topRight: Radius.circular(5),
+                              bottomLeft: Radius.circular(15),
+                              bottomRight: Radius.circular(15),
                             ),
                             child: snapshot.data[index] == "[SKIPPED]"
                                 ? Image.asset(
@@ -2424,7 +2444,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ClipRRect(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(15),
-                        topRight: Radius.circular(15),
+                        topRight: Radius.circular(5),
                         bottomLeft: Radius.circular(15),
                         bottomRight: Radius.circular(15),
                       ),
@@ -2467,185 +2487,315 @@ class _DashboardPageState extends State<DashboardPage> {
     return [isRequestAccepted];
   }
 
-  Widget returnFirstTimeDashboard() {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xffFFFFFF),
-        automaticallyImplyLeading: false,
-        elevation: 0,
-      ),
-      body: Container(
-        color: Color(0xffFFFFFF),
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Image.asset("images/marine-debris.png",
-                  fit: BoxFit.cover,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: MediaQuery.of(context).size.height * 0.3),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: Container(
-        height: 50,
-        width: MediaQuery.of(context).size.width * 0.9,
-        padding: EdgeInsets.symmetric(vertical: 5),
-        alignment: Alignment.center,
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width -
-              MediaQuery.of(context).size.width * 0.2,
-          height: 40,
-          child: TextButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => EventCreationMainScreen()));
-            },
-            child: Text(
-              'CREATE A MOMENT',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-          ),
-        ),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Colors.black.withOpacity(0.25),
-                spreadRadius: 0,
-                blurRadius: 2,
-                offset: Offset(0, 4),
-              ),
-            ],
-            gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [secondaryColor, primaryColor])),
-      ),
-      bottomSheet: Padding(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height * 0.05)),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
-  }
+  getChatDataFutureBuilderView() {
+    PanelController _pc = new PanelController();
 
-  Widget returnDashboard() {
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Color(0xffFFFFFF),
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          actions: [
-            settingsModuleFutureBuilderView(),
-            Stack(
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => NotificationScreen()));
-                    UserAccountUtils.updateNotificationAvailableAsFalse(
-                        globalCurrentUserDocumentID);
-                  },
-                  icon: Icon(
-                    Icons.notifications,
-                    color: Colors.black.withOpacity(0.65),
-                    size: 36,
+    BorderRadiusGeometry radius = BorderRadius.only(
+      topLeft: Radius.circular(15.0),
+      topRight: Radius.circular(15.0),
+    );
+
+    return FutureBuilder(
+        future: getChatDataFutureBuilderController(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data[0] == true) {
+              return SlidingUpPanel(
+                controller: _pc,
+                minHeight: MediaQuery.of(context).size.height * 0.1,
+                maxHeight: MediaQuery.of(context).size.height * 0.9,
+                onPanelClosed: () {
+                  setState(() {});
+                  FocusManager.instance.primaryFocus?.unfocus();
+                },
+                onPanelOpened: () {},
+                panel: Container(
+                  padding:
+                      EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                  decoration: BoxDecoration(
+                      color: Color(0xff3B455C), borderRadius: radius),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Chat",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xffD8833A),
+                        ),
+                      ),
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          controller: _scrollController,
+                          child: streamChatData(),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                notificationCheckerStreamer(),
-              ],
-            ),
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: getUserProfilePictureFutureBuilderView(),
-            ),
-          ]),
-      body: Stack(
-        children: [
-          Container(
-            //Add gradient to background
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            color: Colors.white,
-            constraints: BoxConstraints(maxWidth: 600),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                //Create a sidebar container
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width * 0.15,
-                decoration: BoxDecoration(color: Color(0xffFFFFFF)),
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
+                footer: Padding(
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.05,
+                      right: MediaQuery.of(context).size.width * 0.05,
+                      bottom: MediaQuery.of(context).size.width * 0.025),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: Color(0xffffffff),
+                        ),
+                        child: Row(
                           children: [
-                            Container(
-                              height: MediaQuery.of(context).size.width * 0.1,
-                              width: MediaQuery.of(context).size.width * 0.1,
-                              alignment: Alignment.center,
-                              child: IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              EventCreationMainScreen()));
-                                },
-                                icon: Icon(
-                                  Icons.add_circle_outline_rounded,
-                                  color: Colors.white,
+                            Expanded(
+                              child: TextFormField(
+                                keyboardType: TextInputType.multiline,
+                                minLines: 1,
+                                maxLines: 2,
+                                cursorColor: Color(0xff595959),
+                                controller: messageController,
+                                textInputAction: TextInputAction.newline,
+                                decoration: InputDecoration(
+                                  hintText: 'Start typing...',
+                                  contentPadding: EdgeInsets.only(
+                                      left: MediaQuery.of(context).size.width *
+                                          0.05),
+                                  hintStyle: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff555555)),
+                                  border: InputBorder.none,
                                 ),
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xff595959)),
+                                onTap: () {},
                               ),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(15),
-                                    topRight: Radius.circular(15),
-                                    bottomLeft: Radius.circular(15),
-                                    bottomRight: Radius.circular(15),
-                                  ),
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.25),
-                                      spreadRadius: 0,
-                                      blurRadius: 2,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                  gradient: LinearGradient(
-                                      begin: Alignment.bottomCenter,
-                                      end: Alignment.topCenter,
-                                      colors: [secondaryColor, primaryColor])),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.send, color: Color(0xff595959)),
+                              onPressed: () async {
+                                if (messageController.text != "") {
+                                  await uploadChatDataToDatabase();
+                                  FocusScope.of(context).unfocus();
+
+                                  final double maxScroll = _scrollController
+                                      .position.maxScrollExtent;
+                                  _scrollController.animateTo(maxScroll,
+                                      duration: Duration(seconds: 1),
+                                      curve: Curves.ease);
+                                }
+                              },
                             ),
                           ],
                         ),
-                        Container(
-                            height: MediaQuery.of(context).size.height * 0.7,
-                            width: double.maxFinite,
-                            child:
-                                getEventBannerInitialDataStreamBuilderView()),
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+                collapsed: Container(
+                  decoration: BoxDecoration(
+                      color: Color(0xff3B455C), borderRadius: radius),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.00625,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(
+                                MediaQuery.of(context).size.width * 0.05,
+                                10,
+                                MediaQuery.of(context).size.width * 0.05,
+                                0),
+                            child: Text(
+                              "Gathering Chat",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xffD8833A),
+                              ),
+                            ),
+                          ),
+                          //messageNotificationFutureBuilderView()
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(
+                                MediaQuery.of(context).size.width * 0.05,
+                                0,
+                                MediaQuery.of(context).size.width * 0.05,
+                                10),
+                            child: Text(
+                              "Start your conversation",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xffD8833A),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                borderRadius: radius,
+              );
+            } else {
+              return Text("");
+            }
+          } else {
+            return Text("");
+            // Return nothing
+          }
+        });
+  }
+
+  Widget returnDashboard() {
+    return GestureDetector(
+        onTapDown: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: Scaffold(
+          appBar: AppBar(
+              backgroundColor: Color(0xffF3F0E6),
+              automaticallyImplyLeading: false,
+              elevation: 0,
+              actions: [
+                settingsModuleFutureBuilderView(),
+                Stack(
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => NotificationScreen()));
+                        UserAccountUtils.updateNotificationAvailableAsFalse(
+                            globalCurrentUserDocumentID);
+                      },
+                      icon: Icon(
+                        Icons.notifications,
+                        color: Colors.black.withOpacity(0.65),
+                        size: 36,
+                      ),
                     ),
+                    notificationCheckerStreamer(),
                   ],
                 ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: getUserProfilePictureFutureBuilderView(),
+                ),
+              ]),
+          body: Stack(
+            children: [
+              Container(
+                //Add gradient to background
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xffF3F0E6), Color(0xffFFFFFF)])),
+                constraints: BoxConstraints(maxWidth: 600),
               ),
-              getEventDataFutureBuilderView(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    //Create a sidebar container
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width * 0.15,
+                    decoration: BoxDecoration(color: Color(0xfff3f0e6)),
+                    child: Stack(
+                      children: [
+                        Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  alignment: Alignment.center,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  EventCreationMainScreen()));
+                                    },
+                                    icon: Icon(
+                                      Icons.add_circle_outline_rounded,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(15),
+                                        topRight: Radius.circular(5),
+                                        bottomLeft: Radius.circular(15),
+                                        bottomRight: Radius.circular(15),
+                                      ),
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.25),
+                                          spreadRadius: 0,
+                                          blurRadius: 2,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
+                                      gradient: LinearGradient(
+                                          begin: Alignment.bottomCenter,
+                                          end: Alignment.topCenter,
+                                          colors: [
+                                            secondaryColor,
+                                            primaryColor
+                                          ])),
+                                ),
+                              ],
+                            ),
+                            Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.7,
+                                width: double.maxFinite,
+                                child:
+                                    getEventBannerInitialDataStreamBuilderView()),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  getEventDataFutureBuilderView(),
+                ],
+              ),
+              getChatDataFutureBuilderView()
             ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 
   void slideSheet() {

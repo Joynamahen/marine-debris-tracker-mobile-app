@@ -52,6 +52,10 @@ String eventCustomDocumentID = "";
 
 final eventNameController = TextEditingController();
 final eventIntroController = TextEditingController();
+final bottleCountController = TextEditingController();
+final bagCountController = TextEditingController();
+final containerCountController = TextEditingController();
+final otherCountController = TextEditingController();
 
 final Color fontColor = Color(0xff274D6C); // Define a color button gradient
 final Color primaryColor = Color(0xff274D6C); // Define a color button gradient
@@ -597,7 +601,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                   }
                 },
                 child: Text(
-                  'Next',
+                  'NEXT',
                   style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               )),
@@ -1862,19 +1866,34 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.width * 0.3,
+                  height: MediaQuery.of(context).size.width * 0.35,
                   width: MediaQuery.of(context).size.width * 0.3,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    color: Color(0xffffffff),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Color(0xffC4C4C4),
+                        spreadRadius: 0,
+                        blurRadius: 2,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   padding: EdgeInsets.all(10),
                   child: Center(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Image.asset(
-                          "images/bag.png",
+                          "images/bottle.png",
                           width: MediaQuery.of(context).size.width * 0.075,
                         ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.0125,
+                        ),
                         Text(
-                          "Polythene Bags",
+                          "Plastic Bottles",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 12.0,
@@ -1884,7 +1903,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                         ),
                         TextFormField(
                           cursorColor: fontColor,
-                          controller: eventNameController,
+                          controller: bottleCountController,
                           style: TextStyle(
                             fontSize: 14,
                           ),
@@ -1905,9 +1924,21 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                   ),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.width * 0.3,
+                  height: MediaQuery.of(context).size.width * 0.35,
                   width: MediaQuery.of(context).size.width * 0.3,
                   padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    color: Color(0xffffffff),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Color(0xffC4C4C4),
+                        spreadRadius: 0,
+                        blurRadius: 2,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Center(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -1915,6 +1946,9 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                         Image.asset(
                           "images/plastic-glass.png",
                           width: MediaQuery.of(context).size.width * 0.075,
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.0125,
                         ),
                         Text(
                           "Containers",
@@ -1927,7 +1961,132 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                         ),
                         TextFormField(
                           cursorColor: fontColor,
-                          controller: eventNameController,
+                          controller: containerCountController,
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                          onChanged: (value) {},
+                          decoration: InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: fontColor, width: 2.0),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: fontColor, width: 2.0),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.05,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.width * 0.35,
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    color: Color(0xffffffff),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Color(0xffC4C4C4),
+                        spreadRadius: 0,
+                        blurRadius: 2,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.all(10),
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "images/bag.png",
+                          width: MediaQuery.of(context).size.width * 0.075,
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.0125,
+                        ),
+                        Text(
+                          "Polythene Bags",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            color: Color(0xff595959),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        TextFormField(
+                          cursorColor: fontColor,
+                          controller: bagCountController,
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                          onChanged: (value) {},
+                          decoration: InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: fontColor, width: 2.0),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: fontColor, width: 2.0),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.width * 0.35,
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    color: Color(0xffffffff),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Color(0xffC4C4C4),
+                        spreadRadius: 0,
+                        blurRadius: 2,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "images/other.png",
+                          width: MediaQuery.of(context).size.width * 0.075,
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.0125,
+                        ),
+                        Text(
+                          "Other Plastics",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            color: Color(0xff595959),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        TextFormField(
+                          cursorColor: fontColor,
+                          controller: otherCountController,
                           style: TextStyle(
                             fontSize: 14,
                           ),
@@ -2565,6 +2724,10 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
         "banner_image_ref_path":
             bannerImageRefPath == "" ? '[SKIPPED]' : bannerImageRefPath,
         "banner_image_url": bannerImageURL == "" ? '[SKIPPED]' : bannerImageURL,
+        "bottle_count": bottleCountController.text,
+        "bag_count": bagCountController.text,
+        "container_count": containerCountController.text,
+        "other_count": otherCountController.text,
         "event_intro": eventIntroController.text == ""
             ? '[SKIPPED]'
             : eventIntroController.text,
@@ -2747,6 +2910,10 @@ clearVariableValues() {
   bannerImageURL = "";
 
   eventNameController.clear();
+  bottleCountController.clear();
+  bagCountController.clear();
+  otherCountController.clear();
+  containerCountController.clear();
 
   isGetAllContactsExecuted = false;
 

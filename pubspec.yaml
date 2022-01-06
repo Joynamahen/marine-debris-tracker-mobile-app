@@ -81,6 +81,8 @@ flutter:
     - images/bag.png
     - images/plastic-glass.png
     - images/logo.png
+    - images/bottle.png
+    - images/other.png
 
     - asset/country-code.json
 
