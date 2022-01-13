@@ -5,13 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "singsing",
+            "name": "debristracker",
             "request": "launch",
             "type": "dart",
             "program": "lib/0-get-started-main-page.dart"
         },
         {
-            "name": "singsing (profile mode)",
+            "name": "debristracker (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"

@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_place/google_place.dart';
 import 'package:path/path.dart' as path;
 import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,6 +33,7 @@ class EventCreationMainScreen extends StatefulWidget {
       _EventCreationMainScreenState();
 }
 
+String address = "";
 String globalCurrentUserCellNumber = "";
 String globalCurrentUserDocumentID = "";
 
@@ -201,7 +203,13 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
     });
   }
 
+  late GooglePlace googlePlace;
+  List<AutocompletePrediction> predictions = [];
+
   void initState() {
+    String apiKey = 'AIzaSyCM73rL10J5WPy21OZw7YakC6WGXeruPgA';
+    googlePlace = GooglePlace(apiKey);
+
     getNextFriday();
     createDynamicLink();
     getAlreadyRegisteredUsers();
@@ -331,7 +339,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
 
             decoration: BoxDecoration(
               color: Color(0xffC4C4C4),
-              borderRadius: BorderRadius.all(Radius.circular(34)),
+              borderRadius: BorderRadius.all(Radius.circular(15)),
               boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: Color(0xff274D6C),
@@ -360,7 +368,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
 
           decoration: BoxDecoration(
             color: Color(0xffC4C4C4),
-            borderRadius: BorderRadius.all(Radius.circular(34)),
+            borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Color(0xff04D3A8),
@@ -389,7 +397,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
         ),
 
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(34)),
+            borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Colors.black.withOpacity(0.25),
@@ -419,7 +427,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                 color: Colors.white)),
 
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(34)),
+            borderRadius: BorderRadius.all(Radius.circular(15)),
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Colors.black.withOpacity(0.25),
@@ -1270,7 +1278,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                                                   0.05,
                                               decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.all(
-                                                      Radius.circular(34)),
+                                                      Radius.circular(15)),
                                                   color: Color(0xffc4c4c4)),
                                               child: Column(
                                                 mainAxisAlignment:
@@ -1297,7 +1305,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                                                   0.05,
                                               decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.all(
-                                                      Radius.circular(34)),
+                                                      Radius.circular(15)),
                                                   boxShadow: <BoxShadow>[
                                                     BoxShadow(
                                                       color: Color(0xffC4C4C4),
@@ -1378,7 +1386,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                                                     0.05,
                                                 decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.all(
-                                                        Radius.circular(34)),
+                                                        Radius.circular(15)),
                                                     color: Color(0xffc4c4c4)),
                                                 child: Column(
                                                     mainAxisAlignment:
@@ -1406,7 +1414,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                                                     0.2,
                                                 height: MediaQuery.of(context).size.height * 0.05,
                                                 decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.all(Radius.circular(34)),
+                                                    borderRadius: BorderRadius.all(Radius.circular(15)),
                                                     boxShadow: <BoxShadow>[
                                                       BoxShadow(
                                                         color:
@@ -1479,7 +1487,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                                                   0.05,
                                               decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.all(
-                                                      Radius.circular(34)),
+                                                      Radius.circular(15)),
                                                   color: Color(0xffc4c4c4)),
                                               child: Column(
                                                 mainAxisAlignment:
@@ -1506,7 +1514,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                                                   0.05,
                                               decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.all(
-                                                      Radius.circular(34)),
+                                                      Radius.circular(15)),
                                                   boxShadow: <BoxShadow>[
                                                     BoxShadow(
                                                       color: Color(0xffC4C4C4),
@@ -1587,7 +1595,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                                                     0.05,
                                                 decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.all(
-                                                        Radius.circular(34)),
+                                                        Radius.circular(15)),
                                                     color: Color(0xffc4c4c4)),
                                                 child: Column(
                                                     mainAxisAlignment:
@@ -1615,7 +1623,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                                                     0.2,
                                                 height: MediaQuery.of(context).size.height * 0.05,
                                                 decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.all(Radius.circular(34)),
+                                                    borderRadius: BorderRadius.all(Radius.circular(15)),
                                                     boxShadow: <BoxShadow>[
                                                       BoxShadow(
                                                         color:
@@ -1667,7 +1675,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                     width: MediaQuery.of(context).size.width * 0.9,
                     height: 50,
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(34)),
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
                             color: Colors.black.withOpacity(0.25),
@@ -1764,7 +1772,17 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                 width: MediaQuery.of(context).size.width * 0.9,
                 height: MediaQuery.of(context).size.height * 0.05,
                 child: TextField(
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      autoCompleteSearch(value);
+                    } else {
+                      if (predictions.length > 0 && mounted) {
+                        setState(() {
+                          predictions = [];
+                        });
+                      }
+                    }
+                  },
                   textAlignVertical: TextAlignVertical.top,
                   textAlign: TextAlign.start,
                   cursorColor: Color(0xffC4C4C4),
@@ -1782,51 +1800,88 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-      floatingActionButton: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: 50,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(34)),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        spreadRadius: 0,
-                        blurRadius: 2,
-                        offset: Offset(0, 4),
+            Expanded(
+              child: ListView.builder(
+                itemCount: predictions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Color(0xff00B7B2),
+                      child: Icon(
+                        Icons.pin_drop,
+                        color: Colors.white,
                       ),
-                    ],
-                    gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [secondaryColor, primaryColor])),
-                child: TextButton(
-                  // If the done button is clicked, do the following things.
-                  onPressed: () async {
-                    setState(() {
-                      screenState = "AddDebrisDataScreen";
-                    });
-                  },
-                  child: Text(
-                    'NEXT',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                )),
+                    ),
+                    title: Text(predictions[index].description.toString(),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xff595959))),
+                    onTap: () {
+                      geDetails(predictions[index].placeId);
+                    },
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
-      bottomSheet: Padding(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height * 0.1)),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      bottomNavigationBar: BottomAppBar(
+        elevation: 0,
+        child: Container(
+            margin: EdgeInsets.fromLTRB(
+                MediaQuery.of(context).size.width * 0.05,
+                0,
+                MediaQuery.of(context).size.width * 0.05,
+                MediaQuery.of(context).size.height * 0.05),
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    spreadRadius: 0,
+                    blurRadius: 2,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [secondaryColor, primaryColor])),
+            child: TextButton(
+              // If the done button is clicked, do the following things.
+              onPressed: () async {
+                setState(() {
+                  screenState = "AddDebrisDataScreen";
+                });
+              },
+              child: Text(
+                'NEXT',
+                style: TextStyle(fontSize: 20, color: Colors.white),
+              ),
+            )),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+
+  void geDetails(var placeId) async {
+    var result = await this.googlePlace.details.get(placeId);
+    if (result != null && result.result != null && mounted) {
+      address = result.result!.formattedAddress.toString();
+    }
+  }
+
+  void autoCompleteSearch(String value) async {
+    var result = await googlePlace.autocomplete.get(value);
+    if (result != null && result.predictions != null && mounted) {
+      setState(() {
+        predictions = result.predictions!;
+      });
+    }
   }
 
   Widget addDebrisDataScreen() {
@@ -2111,47 +2166,44 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
           ],
         ),
       ),
-      floatingActionButton: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: 50,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(34)),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        spreadRadius: 0,
-                        blurRadius: 2,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                    gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [secondaryColor, primaryColor])),
-                child: TextButton(
-                  // If the done button is clicked, do the following things.
-                  onPressed: () async {
-                    setState(() {
-                      screenState = "AddBannerScreen";
-                    });
-                  },
-                  child: Text(
-                    'NEXT',
-                    style: TextStyle(fontSize: 20, color: Colors.white),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 0,
+        child: Container(
+            margin: EdgeInsets.fromLTRB(
+                MediaQuery.of(context).size.width * 0.05,
+                0,
+                MediaQuery.of(context).size.width * 0.05,
+                MediaQuery.of(context).size.height * 0.05),
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    spreadRadius: 0,
+                    blurRadius: 2,
+                    offset: Offset(0, 4),
                   ),
-                )),
-          ],
-        ),
+                ],
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [secondaryColor, primaryColor])),
+            child: TextButton(
+              // If the done button is clicked, do the following things.
+              onPressed: () async {
+                setState(() {
+                  screenState = "AddBannerScreen";
+                });
+              },
+              child: Text(
+                'NEXT',
+                style: TextStyle(fontSize: 20, color: Colors.white),
+              ),
+            )),
       ),
-      bottomSheet: Padding(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height * 0.1)),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -2253,7 +2305,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                 width: MediaQuery.of(context).size.width * 0.9,
                 height: 50,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(34)),
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
                     boxShadow: <BoxShadow>[
                       BoxShadow(
                         color: Colors.black.withOpacity(0.25),
@@ -2716,6 +2768,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
       Map<String, dynamic> eventData = {
         "event_id": eventCustomDocumentID,
         "event_name": eventNameController.text,
+        "location": address == "" ? '[SKIPPED]' : address,
         "participants": addedParticipantsList,
         "start_date": startDate == "" ? '[SKIPPED]' : startDate,
         "end_date": endDate == "" ? '[SKIPPED]' : endDate,
@@ -2735,7 +2788,6 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
         "host": hostList,
         "start_date_time": startDateAndTime,
         "event_creator": globalCurrentUserDocumentID,
-        "location": '[SKIPPED]',
         "notification_id": customNotificationDocumentID,
         "target_message_notification_uids": [],
         "guest_as_host": '[FALSE]',
@@ -2849,7 +2901,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                       width: MediaQuery.of(context).size.width * 0.9,
                       height: 50,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(34)),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
                           boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: Colors.black.withOpacity(0.25),
@@ -2914,6 +2966,7 @@ clearVariableValues() {
   bagCountController.clear();
   otherCountController.clear();
   containerCountController.clear();
+  address = "";
 
   isGetAllContactsExecuted = false;
 

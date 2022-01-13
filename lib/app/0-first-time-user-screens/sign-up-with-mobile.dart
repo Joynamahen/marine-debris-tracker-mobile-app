@@ -27,7 +27,7 @@ class SignUpWithMobile extends StatefulWidget {
   _SignUpWithMobileState createState() => _SignUpWithMobileState();
 }
 
-String selectedCountryCode = "+49";
+String selectedCountryCode = "+94";
 
 final FirebaseAuth _auth =
     FirebaseAuth.instance; //Create firebase instance(object)

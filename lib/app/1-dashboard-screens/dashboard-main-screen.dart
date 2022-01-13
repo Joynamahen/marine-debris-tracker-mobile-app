@@ -1,19 +1,3 @@
-/*
-
- * Date:            07/27/2021
- * Organization:    DreamSpace Academy
- * Website:         https://dreamspace.academy/
- * Author:          Gunarakulan Gunaratnam
- * Author Email:    gunarakulan@gmail.com
- * Contributors :   Abitharani Jeyachandran
-
-
-  File Info
-  ---------
-  This is the main dashboard of the app. It contains the social post which are posted by other members.
-
- */
-
 import 'dart:math';
 
 import 'package:another_flushbar/flushbar.dart';
@@ -36,12 +20,10 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'add-extra-participants-screen.dart';
 import 'event-setting.dart';
 
-final Color buttonColor =
-    Color(0xff04D3A8); // Define a color for button gradient
-final Color primaryColor =
-    Color(0xff04D3A8); // Define a color for button gradient
+final Color fontColor = Color(0xff274D6C); // Define a color button gradient
+final Color primaryColor = Color(0xff274D6C); // Define a color button gradient
 final Color secondaryColor =
-    Color(0xff00B7B2); // Define a color for button gradient
+    Color(0xff00bfff); // Define a color button gradient
 final FirebaseAuth _auth =
     FirebaseAuth.instance; // Create Firebase Auth instance
 
@@ -828,7 +810,7 @@ class _DashboardPageState extends State<DashboardPage> {
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data!.docs.length == 0) {
-            return returnDashboard();
+            return returnFirstTimeDashboard();
           } else if (snapshot.data!.docs.length > 0) {
             if (detectFirstTime == true) {
               return returnDashboardFutureBuilderView();
@@ -2006,7 +1988,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(34)),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
                           boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: Colors.black.withOpacity(0.25),
@@ -2055,7 +2037,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       decoration: BoxDecoration(
                                         color: Color(0xffC4C4C4),
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(34)),
+                                            Radius.circular(15)),
                                         boxShadow: <BoxShadow>[
                                           BoxShadow(
                                             color: Color(0xff04D3A8),
@@ -2137,7 +2119,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       height: 30,
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(
-                                              Radius.circular(34)),
+                                              Radius.circular(15)),
                                           boxShadow: <BoxShadow>[
                                             BoxShadow(
                                               color: Colors.black
@@ -2666,6 +2648,71 @@ class _DashboardPageState extends State<DashboardPage> {
             // Return nothing
           }
         });
+  }
+
+  Widget returnFirstTimeDashboard() {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xffFFFFFF),
+        automaticallyImplyLeading: false,
+        elevation: 0,
+      ),
+      body: Container(
+        color: Color(0xffFFFFFF),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Image.asset("images/marine-debris.png",
+                  fit: BoxFit.cover,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.3),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: Container(
+        height: 50,
+        width: MediaQuery.of(context).size.width * 0.9,
+        padding: EdgeInsets.symmetric(vertical: 5),
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width -
+              MediaQuery.of(context).size.width * 0.2,
+          height: 40,
+          child: TextButton(
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => EventCreationMainScreen()));
+            },
+            child: Text(
+              'CREATE A MOMENT',
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+          ),
+        ),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                spreadRadius: 0,
+                blurRadius: 2,
+                offset: Offset(0, 4),
+              ),
+            ],
+            gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [secondaryColor, primaryColor])),
+      ),
+      bottomSheet: Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).size.height * 0.05)),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
   }
 
   Widget returnDashboard() {
