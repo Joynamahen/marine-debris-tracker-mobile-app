@@ -2762,132 +2762,138 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget returnDashboard() {
     return WillPopScope(
-        onWillPop: () async {
-          return false;
-        },
-        child: Scaffold(
-          appBar: AppBar(
-              backgroundColor: Color(0xffF3F0E6),
-              automaticallyImplyLeading: false,
-              elevation: 0,
-              actions: [
-                settingsModuleFutureBuilderView(),
-                Stack(
-                  children: <Widget>[
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => NotificationScreen()));
-                        UserAccountUtils.updateNotificationAvailableAsFalse(
-                            globalCurrentUserDocumentID);
-                      },
-                      icon: Icon(
-                        Icons.notifications,
-                        color: Colors.black.withOpacity(0.65),
-                        size: 36,
+      onWillPop: () async {
+        return false;
+      },
+      child: GestureDetector(
+          onTapDown: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+          behavior: HitTestBehavior.translucent,
+          child: Scaffold(
+            appBar: AppBar(
+                backgroundColor: Color(0xffF3F0E6),
+                automaticallyImplyLeading: false,
+                elevation: 0,
+                actions: [
+                  settingsModuleFutureBuilderView(),
+                  Stack(
+                    children: <Widget>[
+                      IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => NotificationScreen()));
+                          UserAccountUtils.updateNotificationAvailableAsFalse(
+                              globalCurrentUserDocumentID);
+                        },
+                        icon: Icon(
+                          Icons.notifications,
+                          color: Colors.black.withOpacity(0.65),
+                          size: 36,
+                        ),
+                      ),
+                      notificationCheckerStreamer(),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: getUserProfilePictureFutureBuilderView(),
+                  ),
+                ]),
+            body: Stack(
+              children: [
+                Container(
+                  //Add gradient to background
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xffF3F0E6), Color(0xffFFFFFF)])),
+                  constraints: BoxConstraints(maxWidth: 600),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      //Create a sidebar container
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width * 0.15,
+                      decoration: BoxDecoration(color: Color(0xfff3f0e6)),
+                      child: Stack(
+                        children: [
+                          Column(
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height:
+                                        MediaQuery.of(context).size.width * 0.1,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.1,
+                                    alignment: Alignment.center,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) =>
+                                                    EventCreationMainScreen()));
+                                      },
+                                      icon: Icon(
+                                        Icons.add_circle_outline_rounded,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(15),
+                                          topRight: Radius.circular(5),
+                                          bottomLeft: Radius.circular(15),
+                                          bottomRight: Radius.circular(15),
+                                        ),
+                                        boxShadow: <BoxShadow>[
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.25),
+                                            spreadRadius: 0,
+                                            blurRadius: 2,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
+                                        gradient: LinearGradient(
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                            colors: [
+                                              secondaryColor,
+                                              primaryColor
+                                            ])),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.7,
+                                  width: double.maxFinite,
+                                  child:
+                                      getEventBannerInitialDataStreamBuilderView()),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    notificationCheckerStreamer(),
+                    getEventDataFutureBuilderView(),
                   ],
                 ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: getUserProfilePictureFutureBuilderView(),
-                ),
-              ]),
-          body: Stack(
-            children: [
-              Container(
-                //Add gradient to background
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xffF3F0E6), Color(0xffFFFFFF)])),
-                constraints: BoxConstraints(maxWidth: 600),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    //Create a sidebar container
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width * 0.15,
-                    decoration: BoxDecoration(color: Color(0xfff3f0e6)),
-                    child: Stack(
-                      children: [
-                        Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  height:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  alignment: Alignment.center,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  EventCreationMainScreen()));
-                                    },
-                                    icon: Icon(
-                                      Icons.add_circle_outline_rounded,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(15),
-                                        topRight: Radius.circular(5),
-                                        bottomLeft: Radius.circular(15),
-                                        bottomRight: Radius.circular(15),
-                                      ),
-                                      boxShadow: <BoxShadow>[
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.25),
-                                          spreadRadius: 0,
-                                          blurRadius: 2,
-                                          offset: Offset(0, 2),
-                                        ),
-                                      ],
-                                      gradient: LinearGradient(
-                                          begin: Alignment.bottomCenter,
-                                          end: Alignment.topCenter,
-                                          colors: [
-                                            secondaryColor,
-                                            primaryColor
-                                          ])),
-                                ),
-                              ],
-                            ),
-                            Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.7,
-                                width: double.maxFinite,
-                                child:
-                                    getEventBannerInitialDataStreamBuilderView()),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  getEventDataFutureBuilderView(),
-                ],
-              ),
-            ],
-          ),
-        ));
+                getChatDataFutureBuilderView()
+              ],
+            ),
+          )),
+    );
   }
 
   void slideSheet() {

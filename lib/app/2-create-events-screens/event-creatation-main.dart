@@ -82,6 +82,36 @@ TextEditingController contactSearchController = new TextEditingController();
 
 bool dateTimeAllDaysStatus = false;
 
+deeplinkURLMaker(String eventID, String eventName, String bannerImageURL,
+    String startDate, String endDate, String startTime, String endTime) async {
+  String localBannerURl = "";
+
+  if (bannerImageURL == "") {
+    localBannerURl = '[SKIPPED]';
+  } else {
+    localBannerURl = bannerImageURL;
+  }
+
+  String baseDataInsertionURL =
+      "https://joinsingsing.com/insert-deeplink-data.php";
+
+  // Encode Banner Image URL
+  String encodedURL = CommonUtils.encodeURL(localBannerURl);
+
+  // Get username & replace empty space with %20
+  String nameOfInvitor = await UserAccountUtils.getCurrentUserUsername();
+  nameOfInvitor = nameOfInvitor.replaceAll(" ", "%20");
+
+  // Replace start&end time's space with %20
+  String localStartDate = startDate.replaceAll(" ", "%20");
+  String localEndDate = endDate.replaceAll(" ", "%20");
+
+  String dataInsertionLink =
+      "$baseDataInsertionURL?event_id=$eventID&event_name=$eventName&invitor_name=$nameOfInvitor&start_date=$localStartDate&end_date=$localEndDate&start_time=$startTime&end_time=$endTime&banner_url=$encodedURL";
+
+  return dataInsertionLink;
+}
+
 getNextFriday() {
   // Define a day number and day name in a map.
   Map<String, int> dayWithNumber = {
@@ -1140,7 +1170,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
               Center(
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  height: MediaQuery.of(context).size.height * 0.2,
+                  height: MediaQuery.of(context).size.height * 0.3,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(37)),
                     color: Color(0xffffffff),
@@ -1156,6 +1186,50 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 20),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "All day",
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xff595959)),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(right: 20),
+                            child: Column(
+                              children: [
+                                Transform.scale(
+                                  scale: 1.5,
+                                  child: Switch.adaptive(
+                                    activeColor: Color(0xfffffff),
+                                    activeTrackColor: Color(0xff07B1A1),
+                                    inactiveThumbColor: Color(0xffffffff),
+                                    inactiveTrackColor: Color(0xffC4C4C4),
+                                    value: dateTimeAllDaysStatus,
+                                    onChanged: (bool value) {
+                                      if (dateTimeAllDaysStatus == false) {
+                                        _onChanged(true);
+                                      } else {
+                                        _onChanged(false);
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                       Padding(
                         padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                         child: Column(
@@ -1355,6 +1429,215 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                                                   if (dateTimeAllDaysStatus ==
                                                       false)
                                                     Text(startTime,
+                                                        style: TextStyle(
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Color(
+                                                                0xffffffff)))
+                                                ]))),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.0125,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "end date",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xff274D6C)),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        Utils.showSheet(
+                                          context,
+                                          child: buildDatePicker(),
+                                          onClicked: () {
+                                            final value =
+                                                DateFormat('EEEE, MMMM d, y')
+                                                    .format(dateTime);
+
+                                            setState(() {
+                                              endDate = value;
+                                            });
+
+                                            Navigator.pop(context);
+                                          },
+                                        );
+                                      },
+                                      child: endDate == ""
+                                          ? Container(
+                                              width: MediaQuery.of(context).size.width *
+                                                  0.5,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.05,
+                                              decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(15)),
+                                                  color: Color(0xffc4c4c4)),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text("select now",
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: Color(
+                                                              0xffffffff)))
+                                                ],
+                                              ))
+                                          : Container(
+                                              width:
+                                                  MediaQuery.of(context).size.width *
+                                                      0.5,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.05,
+                                              decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(15)),
+                                                  boxShadow: <BoxShadow>[
+                                                    BoxShadow(
+                                                      color: Color(0xffC4C4C4),
+                                                      spreadRadius: 0,
+                                                      blurRadius: 2,
+                                                      offset: Offset(0, 4),
+                                                    ),
+                                                  ],
+                                                  gradient: LinearGradient(
+                                                      begin: Alignment.bottomCenter,
+                                                      end: Alignment.topCenter,
+                                                      colors: [
+                                                        secondaryColor,
+                                                        primaryColor
+                                                      ])),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(endDate,
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: Color(
+                                                              0xffffffff)))
+                                                ],
+                                              )),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.05,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "time (optional)",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          color: Color(0xff274D6C)),
+                                    ),
+                                    InkWell(
+                                        onTap: () {
+                                          if (dateTimeAllDaysStatus == false) {
+                                            Utils.showSheet(
+                                              context,
+                                              child: buildTimePicker(),
+                                              onClicked: () {
+                                                final value =
+                                                    DateFormat('HH:mm')
+                                                        .format(dateTime);
+
+                                                setState(() {
+                                                  endTime = value;
+                                                });
+
+                                                Navigator.pop(context);
+                                              },
+                                            );
+                                          }
+                                        },
+                                        child: dateTimeAllDaysStatus == true ||
+                                                endTime == ""
+                                            ? Container(
+                                                width: MediaQuery.of(context).size.width *
+                                                    0.2,
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.05,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.all(
+                                                        Radius.circular(15)),
+                                                    color: Color(0xffc4c4c4)),
+                                                child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      if (dateTimeAllDaysStatus ==
+                                                          false)
+                                                        Text("select",
+                                                            style: TextStyle(
+                                                                fontSize: 12,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Color(
+                                                                    0xffffffff)))
+                                                    ]))
+                                            : Container(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
+                                                height: MediaQuery.of(context).size.height * 0.05,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                    boxShadow: <BoxShadow>[
+                                                      BoxShadow(
+                                                        color:
+                                                            Color(0xffC4C4C4),
+                                                        spreadRadius: 0,
+                                                        blurRadius: 2,
+                                                        offset: Offset(0, 4),
+                                                      ),
+                                                    ],
+                                                    gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [secondaryColor, primaryColor])),
+                                                child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
+                                                  if (dateTimeAllDaysStatus ==
+                                                      false)
+                                                    Text(endTime,
                                                         style: TextStyle(
                                                             fontSize: 15,
                                                             fontWeight:
@@ -2510,6 +2793,16 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
         "guest_as_host": '[FALSE]',
         "event_status": '[ACTIVE]'
       };
+
+      String deeplinkDataInsertionLink = await deeplinkURLMaker(
+          eventCustomDocumentID,
+          eventNameController.text,
+          bannerImageURL,
+          startDate,
+          endDate,
+          startTime,
+          endTime);
+      uploadDeeplinkDataToJoinSingSingWebPage(deeplinkDataInsertionLink);
 
       await uploadNotificationData(eventNameController.text,
           addedParticipantsList, customNotificationDocumentID);
