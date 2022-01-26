@@ -7,6 +7,7 @@ import 'package:debristracker/app-utils/firebase-firestore-utils.dart';
 import 'package:debristracker/app-utils/user-account-utils.dart';
 import 'package:debristracker/app/1-dashboard-screens/account-setting.dart';
 import 'package:debristracker/app/1-dashboard-screens/notification-screen.dart';
+import 'package:debristracker/app/1-dashboard-screens/participant-list-screen.dart';
 import 'package:debristracker/app/2-create-events-screens/event-creatation-main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -65,6 +66,7 @@ getUserName() async {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  PanelController _panelController = PanelController();
   _DashboardPageState(documentID, statusType);
 
   void initState() {
@@ -98,6 +100,9 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
   }
 
+  void togglePanel() => _panelController.isPanelOpen
+      ? _panelController.close()
+      : _panelController.open();
   // Main Build function
   @override
   Widget build(BuildContext context) {
@@ -1227,6 +1232,7 @@ class _DashboardPageState extends State<DashboardPage> {
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.data != null && snapshot.hasData) {
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "WELCOME. This is the start of your event chat.",
@@ -1964,6 +1970,17 @@ class _DashboardPageState extends State<DashboardPage> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.0125,
                     ),
+                  InkWell(
+                    onTap: () {},
+                    child: Text(
+                      "participants",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xff04D3A8)),
+                    ),
+                  ),
                   getInvitedParticipantsProfileFutureBuilderView(
                       snapshot.data['participants']),
                   SizedBox(
@@ -1988,7 +2005,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          borderRadius: BorderRadius.all(Radius.circular(34)),
                           boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: Colors.black.withOpacity(0.25),
@@ -2037,7 +2054,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       decoration: BoxDecoration(
                                         color: Color(0xffC4C4C4),
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(15)),
+                                            Radius.circular(34)),
                                         boxShadow: <BoxShadow>[
                                           BoxShadow(
                                             color: Color(0xff04D3A8),
@@ -2119,7 +2136,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       height: 30,
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(
-                                              Radius.circular(15)),
+                                              Radius.circular(34)),
                                           boxShadow: <BoxShadow>[
                                             BoxShadow(
                                               color: Colors.black
@@ -2378,7 +2395,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       padding: EdgeInsets.only(
                           right: MediaQuery.of(context).size.width * 0.0125),
                       child: InkWell(
-                          onTap: () async {},
+                          onTap: () async {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ParticipantListPage(
+                                    eventDocumentID:
+                                        globalEventDataDocumentID)));
+                          },
                           child: ClipRRect(
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(15),
@@ -2388,7 +2410,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                             child: snapshot.data[index] == "[SKIPPED]"
                                 ? Image.asset(
-                                    "images/default-event-banner-image.png",
+                                    "images/default-profile-picture.png",
+                                    fit: BoxFit.cover,
                                     width: 45,
                                     height: 45,
                                   )
@@ -2470,8 +2493,6 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   getChatDataFutureBuilderView() {
-    PanelController _pc = new PanelController();
-
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(15.0),
       topRight: Radius.circular(15.0),
@@ -2483,23 +2504,37 @@ class _DashboardPageState extends State<DashboardPage> {
           if (snapshot.hasData) {
             if (snapshot.data[0] == true) {
               return SlidingUpPanel(
-                controller: _pc,
+                controller: _panelController,
+                parallaxEnabled: true,
                 minHeight: MediaQuery.of(context).size.height * 0.1,
                 maxHeight: MediaQuery.of(context).size.height * 0.9,
                 onPanelClosed: () {
                   setState(() {});
                   FocusManager.instance.primaryFocus?.unfocus();
                 },
-                onPanelOpened: () {},
                 panel: Container(
-                  padding:
-                      EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.05,
+                      right: MediaQuery.of(context).size.width * 0.05),
                   decoration: BoxDecoration(
                       color: Color(0xff3B455C), borderRadius: radius),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Center(
+                        child: GestureDetector(
+                          onTap: togglePanel,
+                          child: Container(
+                            margin: EdgeInsets.all(5),
+                            color: Color(0xffFF6348),
+                            height: 5,
+                            width: 40,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.025),
                       Text(
                         "Chat",
                         textAlign: TextAlign.left,
@@ -2537,6 +2572,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           children: [
                             Expanded(
                               child: TextFormField(
+                                textCapitalization:
+                                    TextCapitalization.sentences,
                                 keyboardType: TextInputType.multiline,
                                 minLines: 1,
                                 maxLines: 2,
@@ -2589,8 +2626,16 @@ class _DashboardPageState extends State<DashboardPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.00625,
+                      Center(
+                        child: GestureDetector(
+                          onTap: togglePanel,
+                          child: Container(
+                            margin: EdgeInsets.all(5),
+                            color: Color(0xffFF6348),
+                            height: 5,
+                            width: 40,
+                          ),
+                        ),
                       ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -2716,9 +2761,10 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget returnDashboard() {
-    return GestureDetector(
-        onTapDown: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-        behavior: HitTestBehavior.translucent,
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
         child: Scaffold(
           appBar: AppBar(
               backgroundColor: Color(0xffF3F0E6),
@@ -2839,7 +2885,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   getEventDataFutureBuilderView(),
                 ],
               ),
-              getChatDataFutureBuilderView()
             ],
           ),
         ));
