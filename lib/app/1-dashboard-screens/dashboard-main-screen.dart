@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:debristracker/app-utils/firebase-firestore-utils.dart';
 import 'package:debristracker/app-utils/user-account-utils.dart';
 import 'package:debristracker/app/1-dashboard-screens/account-setting.dart';
+import 'package:debristracker/app/1-dashboard-screens/chatPage.dart';
 import 'package:debristracker/app/1-dashboard-screens/notification-screen.dart';
 import 'package:debristracker/app/1-dashboard-screens/participant-list-screen.dart';
 import 'package:debristracker/app/2-create-events-screens/event-creatation-main.dart';
@@ -2492,209 +2493,6 @@ class _DashboardPageState extends State<DashboardPage> {
     return [isRequestAccepted];
   }
 
-  getChatDataFutureBuilderView() {
-    BorderRadiusGeometry radius = BorderRadius.only(
-      topLeft: Radius.circular(15.0),
-      topRight: Radius.circular(15.0),
-    );
-
-    return FutureBuilder(
-        future: getChatDataFutureBuilderController(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data[0] == true) {
-              return SlidingUpPanel(
-                controller: _panelController,
-                parallaxEnabled: true,
-                minHeight: MediaQuery.of(context).size.height * 0.1,
-                maxHeight: MediaQuery.of(context).size.height * 0.9,
-                onPanelClosed: () {
-                  setState(() {});
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-                panel: Container(
-                  padding: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width * 0.05,
-                      right: MediaQuery.of(context).size.width * 0.05),
-                  decoration: BoxDecoration(
-                      color: Color(0xff3B455C), borderRadius: radius),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: GestureDetector(
-                          onTap: togglePanel,
-                          child: Container(
-                            margin: EdgeInsets.all(5),
-                            color: Color(0xffFF6348),
-                            height: 5,
-                            width: 40,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.025),
-                      Text(
-                        "Chat",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xffD8833A),
-                        ),
-                      ),
-                      Container(
-                        height: MediaQuery.of(context).size.height * 0.6,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          controller: _scrollController,
-                          child: streamChatData(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                footer: Padding(
-                  padding: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width * 0.05,
-                      right: MediaQuery.of(context).size.width * 0.05,
-                      bottom: MediaQuery.of(context).size.width * 0.025),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          color: Color(0xffffffff),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                keyboardType: TextInputType.multiline,
-                                minLines: 1,
-                                maxLines: 2,
-                                cursorColor: Color(0xff595959),
-                                controller: messageController,
-                                textInputAction: TextInputAction.newline,
-                                decoration: InputDecoration(
-                                  hintText: 'Start typing...',
-                                  contentPadding: EdgeInsets.only(
-                                      left: MediaQuery.of(context).size.width *
-                                          0.05),
-                                  hintStyle: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xff555555)),
-                                  border: InputBorder.none,
-                                ),
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color: Color(0xff595959)),
-                                onTap: () {},
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.send, color: Color(0xff595959)),
-                              onPressed: () async {
-                                if (messageController.text != "") {
-                                  await uploadChatDataToDatabase();
-                                  FocusScope.of(context).unfocus();
-
-                                  final double maxScroll = _scrollController
-                                      .position.maxScrollExtent;
-                                  _scrollController.animateTo(maxScroll,
-                                      duration: Duration(seconds: 1),
-                                      curve: Curves.ease);
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                collapsed: Container(
-                  decoration: BoxDecoration(
-                      color: Color(0xff3B455C), borderRadius: radius),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: GestureDetector(
-                          onTap: togglePanel,
-                          child: Container(
-                            margin: EdgeInsets.all(5),
-                            color: Color(0xffFF6348),
-                            height: 5,
-                            width: 40,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(
-                                MediaQuery.of(context).size.width * 0.05,
-                                10,
-                                MediaQuery.of(context).size.width * 0.05,
-                                0),
-                            child: Text(
-                              "Gathering Chat",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xffD8833A),
-                              ),
-                            ),
-                          ),
-                          //messageNotificationFutureBuilderView()
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(
-                                MediaQuery.of(context).size.width * 0.05,
-                                0,
-                                MediaQuery.of(context).size.width * 0.05,
-                                10),
-                            child: Text(
-                              "Start your conversation",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xffD8833A),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                borderRadius: radius,
-              );
-            } else {
-              return Text("");
-            }
-          } else {
-            return Text("");
-            // Return nothing
-          }
-        });
-  }
-
   Widget returnFirstTimeDashboard() {
     return Scaffold(
       appBar: AppBar(
@@ -2775,6 +2573,17 @@ class _DashboardPageState extends State<DashboardPage> {
                 elevation: 0,
                 actions: [
                   settingsModuleFutureBuilderView(),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => ChatPageView()));
+                    },
+                    icon: Icon(
+                      Icons.chat,
+                      color: Colors.black.withOpacity(0.65),
+                      size: 36,
+                    ),
+                  ),
                   Stack(
                     children: <Widget>[
                       IconButton(
@@ -2889,7 +2698,6 @@ class _DashboardPageState extends State<DashboardPage> {
                     getEventDataFutureBuilderView(),
                   ],
                 ),
-                getChatDataFutureBuilderView()
               ],
             ),
           )),
