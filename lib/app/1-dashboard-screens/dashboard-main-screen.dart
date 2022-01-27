@@ -864,8 +864,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
                           colors: [
-                            Color(0xffD8AC3A).withOpacity(0.8),
-                            Color(0xffD8833A),
+                            Color(0xff274D6C).withOpacity(0.8),
+                            Color(0xff274D6C),
                           ])),
                   constraints: BoxConstraints(
                     minWidth: 12,
@@ -1365,7 +1365,7 @@ class _DashboardPageState extends State<DashboardPage> {
           return Text(
             "Let " +
                 snapshot.data['name'].toString() +
-                " know if you can make it to “Birthday Reunion Lio&Tim”",
+                " know if you want to collaborate",
             style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -2058,7 +2058,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                             Radius.circular(34)),
                                         boxShadow: <BoxShadow>[
                                           BoxShadow(
-                                            color: Color(0xff04D3A8),
+                                            color: Color(0xff274D6C),
                                             spreadRadius: 0,
                                             blurRadius: 2,
                                             offset: Offset(0, 4),
