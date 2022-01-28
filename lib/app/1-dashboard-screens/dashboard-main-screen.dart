@@ -221,8 +221,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           style: TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold),
                           colors: [
-                            Color(0xff3B455C),
-                            Color(0xff00B7B2),
+                            primaryColor,
+                            secondaryColor,
                           ],
                         ),
                         SizedBox(
@@ -245,7 +245,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: Color(0xff04D3A8)),
+                                  color: fontColor),
                             ),
                             for (var ed = 0;
                                 ed < snapshot.data!.docs.length;
@@ -323,15 +323,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                                 },
                                                 child: ClipRRect(
                                                   borderRadius:
-                                                      BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(15),
-                                                    topRight:
-                                                        Radius.circular(5),
-                                                    bottomLeft:
-                                                        Radius.circular(15),
-                                                    bottomRight:
-                                                        Radius.circular(15),
+                                                      BorderRadius.all(
+                                                    Radius.circular(15),
                                                   ),
                                                   child: snapshot.data!.docs[ed]
                                                               [
@@ -426,7 +419,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xff04D3A8)),
+                              color: fontColor),
                         ),
                         for (var en = 0; en < noDateEventData.length; en++) ...[
                           GestureDetector(
@@ -470,11 +463,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                           });
                                         },
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(15),
-                                            topRight: Radius.circular(5),
-                                            bottomLeft: Radius.circular(15),
-                                            bottomRight: Radius.circular(15),
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(15),
                                           ),
                                           child: noDateEventData[en]
                                                       ['banner_image_url'] ==
@@ -560,36 +550,6 @@ class _DashboardPageState extends State<DashboardPage> {
                     highlightColor: Colors.grey.shade100));
           }
         });
-  }
-
-  messageNotificationFutureBuilderView() {
-    return FutureBuilder(
-      future: FirebaseFirestore.instance
-          .collection('event_data')
-          .doc(globalEventDataDocumentID)
-          .get(),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if (snapshot.hasData) {
-          return Container(
-            decoration: new BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Color(0xff04D3A8),
-                      Color(0xff00B7B2),
-                    ])),
-            constraints: BoxConstraints(
-              minWidth: 8,
-              minHeight: 8,
-            ),
-          );
-        } else {
-          return Text("");
-        }
-      },
-    );
   }
 
   detectTheFirstUpComingEvent() async {
@@ -1051,11 +1011,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(5),
-                        bottomLeft: Radius.circular(15),
-                        bottomRight: Radius.circular(15),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15),
                       ),
                       child: snapshot.data[1] == "[SKIPPED]"
                           ? Image.asset(
@@ -1131,87 +1088,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   ],
                 ),
               ),
-              /*ListTile(
-                onLongPress: () {},
-                enabled: true,
-                dense: true,
-                contentPadding: EdgeInsets.all(0),
-                visualDensity: VisualDensity(horizontal: 0, vertical: 0),
-                minVerticalPadding: 0,
-                leading: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(5),
-                        bottomLeft: Radius.circular(15),
-                        bottomRight: Radius.circular(15),
-                      ),
-                      child: snapshot.data[1] == "[SKIPPED]"
-                          ? Image.asset(
-                              "images/default-profile-picture.png",
-                              fit: BoxFit.cover,
-                              width: MediaQuery.of(context).size.width * 0.1,
-                              height: MediaQuery.of(context).size.width *
-                                  0.1, // this is the solution for border
-                            )
-                          : CachedNetworkImage(
-                              imageUrl: snapshot.data[1],
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Shimmer.fromColors(
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.1,
-                                    height:
-                                        MediaQuery.of(context).size.width * 0.1,
-                                    color: Colors.white,
-                                  ),
-                                  baseColor: Colors.grey.shade300,
-                                  highlightColor: Colors.grey.shade100),
-                              errorWidget: (context, url, error) =>
-                                  Icon(Icons.error),
-                              width: MediaQuery.of(context).size.width * 0.1,
-                              height: MediaQuery.of(context).size.width *
-                                  0.1, // this is the solution for border
-                            ),
-                    ),
-                  ],
-                ),
-                title: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      snapshot.data[0],
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xffffffff),
-                      ),
-                    ),
-                    Text(
-                      basicChatData[0] + " at " + basicChatData[1],
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xffffffff).withOpacity(0.5),
-                      ),
-                    ),
-                  ],
-                ),
-                subtitle: Text(
-                  basicChatData[2],
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xffffffff),
-                  ),
-                ),
-              ),*/
             ],
           );
         } else {
@@ -1292,11 +1168,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   MaterialPageRoute(builder: (_) => AccountSettingScreen()));
             },
             child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15),
-                topRight: Radius.circular(5),
-                bottomLeft: Radius.circular(15),
-                bottomRight: Radius.circular(15),
+              borderRadius: BorderRadius.all(
+                Radius.circular(15),
               ),
               child: snapshot.data.toString() != '[SKIPPED]'
                   ? CachedNetworkImage(
@@ -1324,11 +1197,8 @@ class _DashboardPageState extends State<DashboardPage> {
           );
         } else {
           return ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15),
-                topRight: Radius.circular(5),
-                bottomLeft: Radius.circular(15),
-                bottomRight: Radius.circular(15),
+              borderRadius: BorderRadius.all(
+                Radius.circular(15),
               ),
               child: Shimmer.fromColors(
                   child: Container(
@@ -1844,10 +1714,8 @@ class _DashboardPageState extends State<DashboardPage> {
               width: MediaQuery.of(context).size.width -
                   MediaQuery.of(context).size.width * 0.15,
               decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xffF3F0E6), Color(0xffFFFFFF)])),
+                  color: Color(0xffFFFFFF),
+                  border: Border.all(width: 1, color: Color(0xffc4c4c4))),
               constraints: BoxConstraints(
                   maxWidth: 600,
                   minHeight: MediaQuery.of(context).size.height,
@@ -1886,11 +1754,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     height: MediaQuery.of(context).size.height * 0.25,
                     child: snapshot.data['banner_image_url'] == '[SKIPPED]'
                         ? ClipRRect(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15),
                             ),
                             child: Image.asset(
                               "images/default-event-banner-image.png",
@@ -1900,11 +1765,8 @@ class _DashboardPageState extends State<DashboardPage> {
                               fit: BoxFit.cover,
                             ))
                         : ClipRRect(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15),
                             ),
                             child: CachedNetworkImage(
                               imageUrl: snapshot.data['banner_image_url'],
@@ -1935,7 +1797,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xff04D3A8)),
+                          color: fontColor),
                     ),
                   if (snapshot.data['event_intro'] != '[SKIPPED]')
                     Text(
@@ -1956,7 +1818,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xff04D3A8)),
+                          color: fontColor),
                     ),
                   if (snapshot.data['location'] != "[SKIPPED]")
                     Text(
@@ -1971,6 +1833,325 @@ class _DashboardPageState extends State<DashboardPage> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.0125,
                     ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            height: MediaQuery.of(context).size.width * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                              color: Color(0xffffffff),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: Color(0xffC4C4C4),
+                                  spreadRadius: 0,
+                                  blurRadius: 2,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            padding: EdgeInsets.all(10),
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "images/bottle.png",
+                                    width: MediaQuery.of(context).size.width *
+                                        0.075,
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.0125,
+                                  ),
+                                  Text(
+                                    "Plastic Bottles",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Color(0xff595959),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.04,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      snapshot.data['bottle_count'],
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15)),
+                                        boxShadow: <BoxShadow>[
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.25),
+                                            spreadRadius: 0,
+                                            blurRadius: 2,
+                                            offset: Offset(0, 4),
+                                          ),
+                                        ],
+                                        gradient: LinearGradient(
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                            colors: [
+                                              secondaryColor,
+                                              primaryColor
+                                            ])), // Apply gradient to the button
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: MediaQuery.of(context).size.width * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                              color: Color(0xffffffff),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: Color(0xffC4C4C4),
+                                  spreadRadius: 0,
+                                  blurRadius: 2,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "images/plastic-glass.png",
+                                    width: MediaQuery.of(context).size.width *
+                                        0.075,
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.0125,
+                                  ),
+                                  Text(
+                                    "Containers",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Color(0xff595959),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.04,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      snapshot.data['container_count'],
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15)),
+                                        boxShadow: <BoxShadow>[
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.25),
+                                            spreadRadius: 0,
+                                            blurRadius: 2,
+                                            offset: Offset(0, 4),
+                                          ),
+                                        ],
+                                        gradient: LinearGradient(
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                            colors: [
+                                              secondaryColor,
+                                              primaryColor
+                                            ])), // Apply gradient to the button
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.025,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            height: MediaQuery.of(context).size.width * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                              color: Color(0xffffffff),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: Color(0xffC4C4C4),
+                                  spreadRadius: 0,
+                                  blurRadius: 2,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            padding: EdgeInsets.all(10),
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "images/bag.png",
+                                    width: MediaQuery.of(context).size.width *
+                                        0.075,
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.0125,
+                                  ),
+                                  Text(
+                                    "Polythene Bags",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Color(0xff595959),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.04,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      snapshot.data['bag_count'],
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15)),
+                                        boxShadow: <BoxShadow>[
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.25),
+                                            spreadRadius: 0,
+                                            blurRadius: 2,
+                                            offset: Offset(0, 4),
+                                          ),
+                                        ],
+                                        gradient: LinearGradient(
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                            colors: [
+                                              secondaryColor,
+                                              primaryColor
+                                            ])), // Apply gradient to the button
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: MediaQuery.of(context).size.width * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                              color: Color(0xffffffff),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: Color(0xffC4C4C4),
+                                  spreadRadius: 0,
+                                  blurRadius: 2,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "images/other.png",
+                                    width: MediaQuery.of(context).size.width *
+                                        0.075,
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.0125,
+                                  ),
+                                  Text(
+                                    "Other Plastics",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      color: Color(0xff595959),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.04,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      snapshot.data['other_count'],
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15)),
+                                        boxShadow: <BoxShadow>[
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.25),
+                                            spreadRadius: 0,
+                                            blurRadius: 2,
+                                            offset: Offset(0, 4),
+                                          ),
+                                        ],
+                                        gradient: LinearGradient(
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                            colors: [
+                                              secondaryColor,
+                                              primaryColor
+                                            ])), // Apply gradient to the button
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.025,
+                  ),
                   InkWell(
                     onTap: () {},
                     child: Text(
@@ -1979,7 +2160,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xff04D3A8)),
+                          color: fontColor),
                     ),
                   ),
                   getInvitedParticipantsProfileFutureBuilderView(
@@ -2006,7 +2187,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(34)),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
                           boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: Colors.black.withOpacity(0.25),
@@ -2055,7 +2236,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       decoration: BoxDecoration(
                                         color: Color(0xffC4C4C4),
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(34)),
+                                            Radius.circular(15)),
                                         boxShadow: <BoxShadow>[
                                           BoxShadow(
                                             color: Color(0xff274D6C),
@@ -2137,7 +2318,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       height: 30,
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(
-                                              Radius.circular(34)),
+                                              Radius.circular(15)),
                                           boxShadow: <BoxShadow>[
                                             BoxShadow(
                                               color: Colors.black
@@ -2403,11 +2584,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                         globalEventDataDocumentID)));
                           },
                           child: ClipRRect(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(15),
-                              topRight: Radius.circular(5),
-                              bottomLeft: Radius.circular(15),
-                              bottomRight: Radius.circular(15),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15),
                             ),
                             child: snapshot.data[index] == "[SKIPPED]"
                                 ? Image.asset(
@@ -2448,11 +2626,8 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Row(
                 children: [
                   ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(15),
-                        topRight: Radius.circular(5),
-                        bottomLeft: Radius.circular(15),
-                        bottomRight: Radius.circular(15),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(15),
                       ),
                       child: Shimmer.fromColors(
                           child: Container(
@@ -2568,7 +2743,7 @@ class _DashboardPageState extends State<DashboardPage> {
           behavior: HitTestBehavior.translucent,
           child: Scaffold(
             appBar: AppBar(
-                backgroundColor: Color(0xffF3F0E6),
+                backgroundColor: Color(0xffFFFFFF),
                 automaticallyImplyLeading: false,
                 elevation: 0,
                 actions: [
@@ -2615,11 +2790,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   //Add gradient to background
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Color(0xffF3F0E6), Color(0xffFFFFFF)])),
+                  color: Color(0xffFFFFFF),
                   constraints: BoxConstraints(maxWidth: 600),
                 ),
                 Row(
@@ -2630,7 +2801,10 @@ class _DashboardPageState extends State<DashboardPage> {
                       //Create a sidebar container
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width * 0.15,
-                      decoration: BoxDecoration(color: Color(0xfff3f0e6)),
+                      decoration: BoxDecoration(
+                          color: Color(0xffFFFFFF),
+                          border:
+                              Border.all(width: 1, color: Color(0xffc4c4c4))),
                       child: Stack(
                         children: [
                           Column(
@@ -2659,11 +2833,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                       ),
                                     ),
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(15),
-                                          topRight: Radius.circular(5),
-                                          bottomLeft: Radius.circular(15),
-                                          bottomRight: Radius.circular(15),
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(15),
                                         ),
                                         boxShadow: <BoxShadow>[
                                           BoxShadow(
