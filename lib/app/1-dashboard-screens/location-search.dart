@@ -49,11 +49,7 @@ class _SearchLocationState extends State<SearchLocation> {
         //Add gradient to background
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xffF3F0E6), Color(0xffFFFFFF)])),
+        color: Color(0xffFFFFFF),
         constraints:
             BoxConstraints(maxWidth: MediaQuery.of(context).size.width),
         padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -124,7 +120,7 @@ class _SearchLocationState extends State<SearchLocation> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: Color(0xff00B7B2),
+                      backgroundColor: Color(0xff274D6C),
                       child: Icon(
                         Icons.pin_drop,
                         color: Colors.white,

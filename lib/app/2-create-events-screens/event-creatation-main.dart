@@ -1806,7 +1806,7 @@ class _EventCreationMainScreenState extends State<EventCreationMainScreen> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: Color(0xff00B7B2),
+                      backgroundColor: Color(0xff274D6C),
                       child: Icon(
                         Icons.pin_drop,
                         color: Colors.white,
